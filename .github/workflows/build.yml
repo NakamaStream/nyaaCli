@@ -5,6 +5,11 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
+# Agregamos los permisos necesarios
+permissions:
+  contents: write
+  discussions: write
+
 jobs:
   build-and-release:
     runs-on: windows-latest
