@@ -1,0 +1,86 @@
+name: Build Executable
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pyinstaller
+        
+    - name: Create spec file
+      run: |
+        echo 'block_cipher = None
+
+        a = Analysis(
+            ["Cli.py"],
+            pathex=["."],
+            binaries=[],
+            datas=[
+                ("src/*.py", "src"),
+                ("src/config.py", "src"),
+                ("src/ui.py", "src"),
+                ("src/scraper.py", "src"),
+                ("assets/*", "assets")
+            ],
+            hiddenimports=[],
+            hookspath=[],
+            hooksconfig={},
+            runtime_hooks=[],
+            excludes=[],
+            win_no_prefer_redirects=False,
+            win_private_assemblies=False,
+            cipher=block_cipher,
+            noarchive=False,
+        )
+
+        pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
+
+        exe = EXE(
+            pyz,
+            a.scripts,
+            a.binaries,
+            a.zipfiles,
+            a.datas,
+            [],
+            name="nyaaCli",
+            debug=False,
+            bootloader_ignore_signals=False,
+            strip=False,
+            upx=True,
+            upx_exclude=[],
+            runtime_tmpdir=None,
+            console=True,
+            disable_windowed_traceback=False,
+            target_arch=None,
+            codesign_identity=None,
+            entitlements_file=None,
+            icon="assets/icon.ico"
+        )' > nyaa_cli.spec
+        
+    - name: Build executable
+      run: |
+        pyinstaller nyaa_cli.spec
+        
+    - name: Upload artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: nyaaCli
+        path: dist/nyaaCli.exe
