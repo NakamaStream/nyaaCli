@@ -5,7 +5,6 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
-# Agregamos los permisos necesarios
 permissions:
   contents: write
   discussions: write
@@ -103,11 +102,11 @@ jobs:
         body: |
           ## NyaaCli Release ${{ steps.date.outputs.date }}
           
-          Última compilación automática del NyaaCli
+          Latest automatic build of NyaaCli
           
-          ### Archivos:
-          - nyaaCli.exe: Ejecutable individual
-          - nyaaCli.zip: Ejecutable comprimido
+          ### Files:
+          - nyaaCli.exe: Standalone executable
+          - nyaaCli.zip: Compressed executable
         draft: false
         prerelease: false
       env:
